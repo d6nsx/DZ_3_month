@@ -147,4 +147,3 @@ fetch('https://jsonplaceholder.typicode.com/posts')
     .then(posts => {
         console.log(posts);
     })
-    .catch(error => console.error('Error fetching posts:', error));
