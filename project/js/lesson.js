@@ -114,36 +114,56 @@ converter(wonInput, somInput, usdInput);
 const card = document.querySelector('.card');
 const btnNext = document.querySelector('#btn-next');
 const btnPrev = document.querySelector('#btn-prev');
+let cardId = 1;
 
-let cardId = 199;
-
-
-const updateCard = (id) => {
-    fetch(`https://jsonplaceholder.typicode.com/todos/${id}`)
-        .then(res => res.json())
-        .then(data => {
-            card.innerHTML = `
-                    <p>${data.title}</p>
-                    <p style="color: ${data.completed ? 'green' : 'red'}"
-                    </p>
-                    <span>Card ID: ${data.id}</span>
-                `;
-        });
+const updateCard = async (id) => {
+    try {
+        const res = await fetch(`https://jsonplaceholder.typicode.com/todos/${id}`);
+        const data = await res.json();
+        card.innerHTML = `
+            <p>${data.title}</p>
+            <p style="color: ${data.completed ? 'green' : 'red'}"></p>
+            <span>Card ID: ${data.id}</span>
+        `;
+    } catch {
+        console.error('Failed to update card');
+    }
 };
 
-
 btnNext.addEventListener('click', () => {
-    cardId = (cardId >= 200) ? 1 : cardId + 1;
+    cardId = cardId >= 200 ? 1 : cardId + 1;
     updateCard(cardId);
 });
 
 btnPrev.addEventListener('click', () => {
-    cardId = (cardId === 1) ? 200 : cardId - 1;
+    cardId = cardId === 1 ? 200 : cardId - 1;
     updateCard(cardId);
 });
 
-fetch('https://jsonplaceholder.typicode.com/posts')
-    .then(response => response.json())
-    .then(posts => {
+(async () => {
+    try {
+        const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const posts = await res.json();
         console.log(posts);
-    })
+    } catch {
+        console.error('Failed to fetch posts');
+    }
+})();
+
+
+
+const searchInput = document.querySelector('.cityName')
+const city = document.querySelector('.city')
+const temp = document.querySelector('.temp')
+
+const API_KEY = 'e417df62e04d3b1b111abeab19cea714'
+const API = 'http://api.openweathermap.org/data/2.5/weather'
+
+    searchInput.oninput = () => {
+        fetch(`${API}?q=${searchInput.value}&appid=${API_KEY}`)
+            .then(res => res.json())
+            .then(data => {
+                city.innerHTML = data.name || 'Город не найден'
+                temp.innerHTML = data.main ? Math.round(data.main?.temp - 273.15) + '&deg;C' : '-'
+            })
+    }
